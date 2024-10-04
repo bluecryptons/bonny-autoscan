@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { createCanvas } = require('canvas');
+const { createCanvas, loadImage } = require('canvas');
 const { faker } = require('@faker-js/faker');
 
 // Fungsi untuk menghasilkan nama toko acak
@@ -24,48 +24,45 @@ const products = [
 ];
 
 // Fungsi untuk generate struk belanja acak
-function generateReceipt() {
-  const canvas = createCanvas(300, 500);
-  const ctx = canvas.getContext('2d');
+function generateReceipt(receiptNumber) {
+  for (let n = 1; n <= receiptNumber; n++) {
+    const canvas = createCanvas(300, 500);
+    const ctx = canvas.getContext('2d');
 
-  // Nama dan Alamat Toko
-  const storeName = generateStoreName();
-  const storeAddress = faker.address.streetAddress();
-  const storePhone = faker.phone.number();
+    // Nama dan Alamat Toko
+    const storeName = generateStoreName();
+    const storeAddress = faker.address.streetAddress();
+    const storePhone = faker.phone.number();
 
-  // Tanggal
-  const dateTime = new Date().toLocaleString();
+    // Tanggal
+    const dateTime = new Date().toLocaleString();
 
-  // Menambahkan teks ke struk
-  ctx.font = '16px Arial';
-  ctx.fillText(storeName, 10, 30);
-  ctx.fillText(storeAddress, 10, 60);
-  ctx.fillText(`Telp: ${storePhone}`, 10, 90);
-  ctx.fillText(dateTime, 10, 120);
+    // Menambahkan teks ke struk
+    ctx.font = '16px Arial';
+    ctx.fillText(storeName, 10, 30);
+    ctx.fillText(storeAddress, 10, 60);
+    ctx.fillText(`Telp: ${storePhone}`, 10, 90);
+    ctx.fillText(dateTime, 10, 120);
 
-  // Pilih produk acak
-  const item = products[Math.floor(Math.random() * products.length)];
-  const itemName = item.name;
-  const itemPrice = getRandomPrice(item.price[0], item.price[1]);
+    // Pilih produk acak
+    const item = products[Math.floor(Math.random() * products.length)];
+    const itemName = item.name;
+    const itemPrice = getRandomPrice(item.price[0], item.price[1]);
 
-  // Menambahkan produk
-  ctx.fillText(`${itemName} - Rp${itemPrice}`, 10, 150);
+    // Menambahkan produk
+    ctx.fillText(`${itemName} - Rp${itemPrice}`, 10, 150);
 
-  // Simpan sebagai PNG
-  const buffer = canvas.toBuffer('image/png');
-  const fileName = `struk_${new Date().getTime()}.png`;  // Nama file berdasarkan timestamp
-  fs.writeFileSync(fileName, buffer);
-  console.log(`Struk belanja telah disimpan sebagai '${fileName}'.`);
+    // Simpan sebagai PNG
+    const buffer = canvas.toBuffer('image/png');
+    fs.writeFileSync(`struk_${n}.png`, buffer);
+    console.log(`Struk belanja ${n} telah disimpan sebagai 'struk_${n}.png'.`);
+  }
 }
 
-// Fungsi utama dengan interval waktu 5 menit
+// Fungsi utama
 function main() {
-  console.log('Script berjalan, struk akan dibuat setiap 5 menit...');
-  
-  // Interval 5 menit (300000 milidetik)
-  setInterval(() => {
-    generateReceipt();
-  }, 300000);
+  const jumlahStruk = 3; // Sesuaikan jumlah struk
+  generateReceipt(jumlahStruk);
 }
 
 // Jalankan script
